@@ -15,10 +15,10 @@ block content
           a(href='/mekan/')= mekan.ad
           small &nbsp;
           +puanOlustur(mekan.puan)
-         span.badge.pull-right.badge-default mekan.mesafe
+         span.badge.pull-right.badge-default= mekan.mesafe
          p.address=mekan.adress
          p
             each imkan in mekan.imkanlar
-              span.label.label-warning imkan
+              span.label.label-warning= imkan
               | &nbsp;
     .col-xs-12.col-sm-12
