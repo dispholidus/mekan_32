@@ -17,7 +17,7 @@ block content
          .panel-body
           each saat in mekanBilgisi.saatler
             p
-                | #{saat.gunler};
+                | #{saat.gunler}: 
                 if(saat.kapali)
                  | Kapalı
                 else
@@ -30,7 +30,8 @@ block content
              span.label.label-warning
                 span.glyphicon.glypicon-ok
                 | &nbsp; #{imkan}
-            | &nbsp; 
+             | &nbsp; 
+            
      .col-xs-12.col-sm-6.location-map
       .panel.panel-primary
         .panel-heading
@@ -38,7 +39,8 @@ block content
         .panel-body
             -var enlem=mekanBilgisi.koordinatlar.enlem
               -var boylam=mekanBilgisi.koordinatlar.boylam
-              img.img-responsive.img-rounded(src='http://maps.googleapis.com/maps/api/staticmap?center='+enlem+','+boylam+'&zoom=12&size=600x400&markers='+enlem+','+boylam+'&key=AIzaSyCmmKygTpBzHGOZEciJpAdxC9v_tWHagnE')
+              img.img-responsive.img-rounded(src='http://maps.googleapis.com/maps/api/staticmap?center='
+              +enlem+','+boylam+'&zoom=12&size=600x400&markers='+enlem+','+boylam+'&key=AIzaSyCmmKygTpBzHGOZEciJpAdxC9v_tWHagnE')
  .row
   .col-xs-12
     .panel.panel-primary.review-panel
@@ -53,7 +55,7 @@ block content
             span.rating
              +puanOlustur(yorum.puan)
             span.reviewAuthor=yorum.yorumYapan
-            | &nbsp;
+            | &nbsp; 
             small.reviewTimestamp=yorum.tarih
           .col-xs-12
              p=yorum.yorumMetni

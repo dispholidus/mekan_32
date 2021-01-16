@@ -1,18 +1,18 @@
 doctype html
 html
   head
-    meta(name='viewport' , content='width=device-width,initial-scale=1.0')
-    title= title
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title= baslik
     link(rel='stylesheet', href='/bootstrap/css/sinan.bootstrap.css')
   body
    .navbar-default.navbar.navbar-fixed-top
     .container
      .navbar-header
       a.navbar-brand(href='/') Mekan32
-       button.navbar-toggle(type=button,data-toggle='collapse',data-target='#navbar-main')
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
+      button.navbar-toggle(type='button',data-toggle='collapse',data-target='#navbar-main')
+       span.icon-bar
+       span.icon-bar
+       span.icon-bar
      #navbar-main.navbar-collapse.collapse
       ul.nav.navbar-nav
        li
@@ -21,6 +21,6 @@ html
     block content
     footer
      .col-12
-      small &copy: Kemal Özkan 2020
-  script(src='javascripts/jquery-3.3.1.min.js')
+      small &copy; #{footer}
+  script(src='/javascripts/jquery-3.5.1.min.js')
   script(src='/bootstrap/js/bootstrap.min.js')
