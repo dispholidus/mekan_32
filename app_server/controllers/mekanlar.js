@@ -1,25 +1,66 @@
-var footer="Asım Sinan Yüksel 2020"
-const anaSayfa=function(req, res, next) {
-  res.render('mekanlar-liste', 
-  	{
-      'baslik': 'Anasayfa',
-      'footer':footer,
-  	'sayfaBaslik':{
-  		'siteAd':'Mekan32',
-  		'aciklama':'Isparta civarındaki mekanları keşfedin'
-  	},
-    'mekanlar':[
-    {
-      'ad':'Starbucks',
-      'adres':'Centrum Garden AVM',
-      'puan':3,
-      'imkanlar':['Dünya Kahveleri','Kekler','Pastalar'],
-      'mesafe':'10km'
-    }
-    ]
+var request = require('postman-request');
+var apiSecenekleri = {
+  sunucu : "http://localhost:3000",
+  apiYolu: '/api/mekanlar/'
+}
+var istekSecenekleri;
+var mesafeyiFormatla = function(mesafe){
+  var yeniMesafe,birim;
+  if(mesafe>1000){
+    yeniMesafe= parseFloat(mesafe/1000).toFixed(2);
+    birim= ' km';
+  }else{
+    yeniMesafe= parseFloat(mesafe).toFixed(1);
+    birim= ' m';
   }
-
-  	);
+  return yeniMesafe + birim;
+}
+var anaSayfaOlustur= function(req,res,cevap,mekanListesi){
+  var mesaj;
+  if(!(mekanListesi instanceof Array)){
+    mesaj = "API HATASI: Birşeyler ters gitti";
+    mekanListesi = [];
+  }else{
+    if(!mekanListesi.length){
+    mesaj= "Civarda herhangi bir mekan bulunamadı!";
+    }
+  }
+  res.render('mekanlar-liste',
+    {
+      baslik: 'Anasayfa',
+      sayfaBaslik:{
+        siteAd:'Mekan32',
+        aciklama:'Isparta civarındaki mekanları keşfedin'
+      },
+      mekanlar:mekanListesi,
+      mesaj:mesaj,
+      cevap:cevap
+  });
+}
+const anaSayfa=function(req, res, next) {
+  istekSecenekleri =
+  {
+    url: apiSecenekleri.sunucu + apiSecenekleri.apiYolu,
+    method: "GET",
+    json: {},
+    qs:{
+      enlem: req.query.enlem,
+      boylam: req.query.boylam
+    }
+  };
+  request(
+    istekSecenekleri,
+    function(hata,cevap,mekanlar){
+      var i , gelenMekanlar;
+      gelenMekanlar = mekanlar;
+      if(!hata && gelenMekanlar.length){
+        for(i=0;i<gelenMekanlar.length;i++){
+          gelenMekanlar[i].mesafe= mesafeyiFormatla(gelenMekanlar[i].mesafe);
+        }
+      }
+      anaSayfaOlustur(req,res,cevap,gelenMekanlar);
+    }
+  );
 }
 
 const mekanBilgisi=function(req, res, next) {
