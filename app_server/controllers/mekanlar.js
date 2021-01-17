@@ -1,6 +1,7 @@
 var request = require('postman-request');
 var apiSecenekleri = {
   sunucu : "https://kemalozkan1611012093.herokuapp.com",
+  //sunucu: "http://localhost:3000",
   apiYolu: '/api/mekanlar/'
 }
 var istekSecenekleri;
@@ -61,6 +62,37 @@ var hataGoster =function(req,res,durum){
     icerik:icerik
   });
 };
+var mekanBilgisiGetir = function(req,res,callback){
+  var istekSecenekleri;
+  istekSecenekleri={
+    url : apiSecenekleri.sunucu + apiSecenekleri.apiYolu + req.params.mekanid,
+    method:"GET",
+    json:{}
+  };
+  request(
+    istekSecenekleri,
+    function(hata,cevap,mekanDetaylari){
+      var gelenMekan = mekanDetaylari;
+      if(cevap.statusCode==200){
+        gelenMekan.koordinatlar={
+          enlem : mekanDetaylari.koordinatlar[0],
+          boylam : mekanDetaylari.koordinatlar[1]
+        };
+        callback(req,res,gelenMekan)
+      }else{
+        hataGoster(req,res,cevap.statusCode);
+      }
+    }
+  );
+}
+var yorumSayfasiOlustur=function(req,res,mekanBilgisi){
+  res.render('yorum-ekle',
+  {
+    baslik:mekanBilgisi.ad + ' mekanına yorum ekle',
+    sayfaBaslik:mekanBilgisi.ad+' mekanına yorum ekle',
+    hata:req.query.hata
+  });
+}
 const anaSayfa=function(req, res, next) {
   istekSecenekleri =
   {
@@ -88,34 +120,21 @@ const anaSayfa=function(req, res, next) {
 }
 
 const mekanBilgisi=function(req, res, next) {
-istekSecenekleri={
-  url : apiSecenekleri.sunucu + apiSecenekleri.apiYolu + req.params.mekanid,
-  method:"GET",
-  json:{}
-};
-request(
-  istekSecenekleri,
-  function(hata,cevap,mekanDetaylari){
-    var gelenMekan = mekanDetaylari;
-    if(cevap.statusCode==200){
-      gelenMekan.koordinatlar={
-        enlem : mekanDetaylari.koordinatlar[0],
-        boylam : mekanDetaylari.koordinatlar[1]
-      };
-      detaySayfasiOlustur(req,res,gelenMekan);
-    }else{
-      hataGoster(req,res,cevap.statusCode);
-    }
-  }
-);
+  mekanBilgisiGetir(req,res,function(req,res,cevap){
+    detaySayfasiOlustur(req,res,cevap);
+  });
 }
-
 const yorumEkle=function(req, res, next) {
-  res.render('yorum-ekle', { title: 'Yorum Ekle' });
+  mekanBilgisiGetir(req,res,function(req,res,cevap){
+    yorumSayfasiOlustur(req,res,cevap);
+  });
 }
+const yorumumuEkle=function(req,res){
 
+}
 module.exports={
 anaSayfa,
 mekanBilgisi,
-yorumEkle
+yorumEkle,
+yorumumuEkle
 }
