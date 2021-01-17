@@ -39,6 +39,7 @@ var anaSayfaOlustur= function(req,res,cevap,mekanListesi){
   });
 }
 var detaySayfasiOlustur = function(req,res,mekanDetaylari){
+  
   res.render('mekan-detay',
   { 
     baslik: mekanDetaylari.ad,
@@ -130,8 +131,36 @@ const yorumEkle=function(req, res, next) {
   });
 }
 const yorumumuEkle=function(req,res){
-
-}
+  var istekSecenekleri,gonderilenYorum,mekanid;
+  mekanid=req.params.mekanid;
+  gonderilenYorum= {
+    yorumYapan : req.boy.name,
+    puan:parseInt(req.body.rating, 10),
+    yorumMetni: req.body.review
+  };
+  istekSecenekleri={
+    url:apiSecenekleri.sunucu + apiSecenekleri.apiYolu + mekanid + '/yorumlar',
+    method : "POST",
+    json : gonderilenYorum
+  };
+  if(!gonderilenYorum.yorumYapan||!gonderilenYorum.puan||!gonderilenYorum.yorumMetni){
+    console.log("işte burdayım");
+    res.redirect('/mekan/'+mekanid+'/yorum/yeni?hata=evet');
+  }else{
+    request(
+      istekSecenekleri,
+      function(hata,cevap,body){
+        if(cevap.statusCode===201){
+          res.redirect('/mekan/'+mekanid);
+        }else if(cevap.statusCode===400 && body.name && body.name ==="ValidationError"){
+          res.redirect('/mekan/'+mekanid+'/yorum/yeni?hata=evet');
+        }else{
+          hataGoster(req,res,cevap.statusCode);
+        }
+      }
+    );
+  }
+};
 module.exports={
 anaSayfa,
 mekanBilgisi,
