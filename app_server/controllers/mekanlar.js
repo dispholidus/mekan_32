@@ -1,6 +1,6 @@
 var request = require('postman-request');
 var apiSecenekleri = {
-  sunucu : "https://kemalozkan1611012093.herokuapp.com",
+  sunucu : "http://localhost:3000",
   apiYolu: '/api/mekanlar/'
 }
 var istekSecenekleri;
@@ -37,6 +37,30 @@ var anaSayfaOlustur= function(req,res,cevap,mekanListesi){
       cevap:cevap
   });
 }
+var detaySayfasiOlustur = function(req,res,mekanDetaylari){
+  res.render('mekan-detay',
+  { 
+    baslik: mekanDetaylari.ad,
+    sayfaBaslik:mekanDetaylari.ad,
+    mekanBilgisi:mekanDetaylari
+  });
+}
+var hataGoster =function(req,res,durum){
+  var baslik,icerik;
+  if(durum==404){
+    baslik = "404,Sayfa bulunamadı!";
+    icerik="Kusura bakma sayfayı bulamadık!";
+  }
+  else{
+    baslik = durum +",Birşeyler ters gitti!";
+    icerik = "Ters giden birşey var!";
+  }
+  res.status(durum);
+  res.render('hata',{
+    baslik:baslik,
+    icerik:icerik
+  });
+};
 const anaSayfa=function(req, res, next) {
   istekSecenekleri =
   {
@@ -64,50 +88,26 @@ const anaSayfa=function(req, res, next) {
 }
 
 const mekanBilgisi=function(req, res, next) {
-  res.render('mekan-detay', 
-    { 
-    'baslik': 'Mekan Bilgisi',
-    'footer':footer,
-    'sayfaBaslik':'Starbucks',
-    'mekanBilgisi':{
-      'ad':'Starbucks',
-      'adres':'Centrum Garden AVM',
-      'puan':3,
-      'imkanlar':['Dünya Kahveleri','Kekler','Pastalar'],
-      'koordinatlar':{
-          'enlem':'37.781885',
-          'boylam':'30.566034'
-      },
-      'saatler':[
-        {
-          'gunler':'Pazartesi-Cuma',
-          'acilis':'7:00',
-          'kapanis':'23:00',
-          'kapali':false
-        },
-        {
-          'gunler':'Cumartesi',
-          'acilis':'9:00',
-          'kapanis':'22:00',
-          'kapali':false
-        },
-        {
-          'gunler':'Pazar', 
-          'kapali':true
-        }
-      ],
-      'yorumlar':[
-        {
-          'yorumYapan':'Asım Sinan Yüksel',
-          'puan':3,
-          'tarih':'27.11.2020',
-          'yorumMetni':'Kahveleri güzel.'
-        }        
-      ]
-
+istekSecenekleri={
+  url : apiSecenekleri.sunucu + apiSecenekleri.apiYolu + req.params.mekanid,
+  method:"GET",
+  json:{}
+};
+request(
+  istekSecenekleri,
+  function(hata,cevap,mekanDetaylari){
+    var gelenMekan = mekanDetaylari;
+    if(cevap.statusCode==200){
+      gelenMekan.koordinatlar={
+        enlem : mekanDetaylari.koordinatlar[0],
+        boylam : mekanDetaylari.koordinatlar[1]
+      };
+      detaySayfasiOlustur(req,res,gelenMekan);
+    }else{
+      hataGoster(req,res,cevap.statusCode);
     }
   }
-    );
+);
 }
 
 const yorumEkle=function(req, res, next) {

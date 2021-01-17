@@ -3,3 +3,11 @@ mixin puanOlustur(puan)
   span.glyphicon.glyphicon-star
  -for (var j=puan;j<5;j++)
   span.glyphicon.glyphicon-star-empty
+mixin tarihFormatla(formatsizGun)
+ -var gun =new Date(formatsizGun);
+ -var aylar =["ocak","şubat","mart","nisan","mayıs","haziran","temmuz","ağustos","eylül","ekim","kasım","aralık"];
+ -var gunBilgisi = gun.getDate();
+ -var ayBilgisi = aylar[gun.getMonth()];
+ -var yilBilgisi = gun.getFullYear();
+ -var sonuc = gunBilgisi + " " + ayBilgisi + " " + yilBilgisi;
+ =sonuc
